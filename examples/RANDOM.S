@@ -1,0 +1,11 @@
+# Reproducible replacement RNG; not the historical S2 generator.
+set.seed(42)
+x <- rnorm(100)
+print(c(mean(x),var(x)))
+print(quantile(x))
+svg("HIST.SVG")
+hist(x,nclass=10,main="Normal sample")
+dev.off()
+svg("QQ.SVG")
+qqnorm(x)
+dev.off()

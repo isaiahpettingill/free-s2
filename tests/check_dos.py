@@ -14,3 +14,16 @@ for prefix in ['TC', 'TF']:
         else:
             assert not failed and out == c['out'], (prefix, c['id'], out, c['out'])
     print(f'{len(cases)} DOS language cases passed: {prefix}')
+
+import xml.etree.ElementTree as ET
+for prefix in ['C','F']:
+    for task in ['DATA','RNG']:
+        rc=ROOT/'build'/f'{prefix}{task}.RC'
+        assert not rc.exists() or rc.read_text().strip()!='1',(prefix,task)
+    out=(ROOT/'build'/f'{prefix}DATA.OUT').read_text()
+    assert '[1] 7\n' in out and '[1] 10\n' in out and '[1] 1 2\n' in out,out
+    for name in ['FIT','HIST','QQ']:
+        assert ET.parse(ROOT/'build'/f'{prefix}{name}.SVG').getroot().tag.endswith('svg')
+    ps=(ROOT/'build'/f'{prefix}FIT.PS').read_text()
+    assert ps.startswith('%!PS') and 'showpage' in ps and '%%EOF' in ps
+    print(f'DOS data/regression/simulation and chart export passed: {prefix}')

@@ -1,36 +1,70 @@
 # free-s2
 
-Independent implementation targeting the 1988 New S language (S2), in
-Open Watcom-compatible C89 with optional Fortran 77 numeric routines.
+A small, independent implementation of the **1988 New S language**, written
+in C89 for Linux and 8086 real-mode DOS. Open Watcom builds the DOS version;
+optional fixed-form Fortran 77 routines use GNU Fortran on Linux and
+Microsoft FORTRAN 5 on DOS.
 
-Start with the [manual-derived compatibility ledger](docs/compatibility.md),
-including historical ambiguities and the provenance of each requirement.
-The full 1988 manual is available as user-supplied reference material,
-including its charts. The ledger separates documented requirements from
-implemented behavior and records internal contradictions in the book.
+Use it to explore data, write vector-based programs, fit small linear
+regressions, and export charts. This is a useful, bounded reconstruction,
+not a complete historical S distribution. No Bell Labs source is used.
 
-Status: initial development. Linux and 8086 real-mode DOS are the targets.
-
-
-Build and run the initial subset on Linux:
+## Get started
 
 ```sh
 make test
 ./build/s2 -e 'mean(1:10)'
-make test-fortran
+./build/s2
 ```
 
-With Open Watcom installed, `make dos-local` builds an 8086 real-mode
-large-model DOS executable. `make dos` uses the sibling
-[dosbox-agent-tools](https://github.com/isaiahpettingill/dosbox-agent-tools)
-compiler wrapper. `make dos-msfortran` stages the Microsoft FORTRAN worker;
-it communicates through files to avoid mixing incompatible C/FORTRAN
-runtime ABIs. GNU Fortran uses a direct numeric subroutine call.
+At the prompt:
 
-This is an initial interpreter, not full S2. See the ledger for known
-semantic gaps. Limits: 2048 elements per vector, 30000-byte source input,
-128 evaluation depth; collection occurs between top-level expressions.
-No persistent workspace or graphics device is implemented yet.
+```s
+x <- c(2,4,6,8)
+x[x > 4]
+center <- function(x) x - mean(x)
+center(x)
+q()
+```
 
-[Validation results and reproduction](docs/validation.md) cover both
-native Linux builds and DOSBox runs with C and Microsoft FORTRAN numerics.
+Run the included data analysis and produce SVG/PostScript charts:
+
+```sh
+cd examples
+../build/s2 ANALYZE.S
+```
+
+This reads `DATA.TXT`, calculates grouped means, fits a straight line, writes
+`FIT.SVG`, `FIT.PS`, `RESID.TXT`, and saves the data and fit in `WORK.S`.
+
+- [Language and usage guide](docs/guide.md): build, syntax, data, functions, statistics, charts, saving work.
+- [Feature set](docs/features.md): supported functions and practical limits.
+- [Compatibility matrix](docs/compatibility.md): manual evidence, historical ambiguities, deliberate differences.
+- [Validation](docs/validation.md): native and DOS test results and reproduction.
+
+## Other builds
+
+```sh
+make test-fortran
+make dos-local
+```
+
+`test-fortran` needs GCC-compatible C and GNU Fortran. `dos-local` needs an
+Open Watcom installation with `WATCOM`, `INCLUDE`, and its compiler directory
+on `PATH`. It builds `build/S2.EXE` with `-0 -ml`, without an 8087 requirement.
+
+The sibling [dosbox-agent-tools](https://github.com/isaiahpettingill/dosbox-agent-tools)
+repository provides compiler containers and the PowerShell DOSBox test
+module. With its prerequisites installed, `make dos` builds the C backend
+and `make dos-msfortran` builds `S2F.EXE`, `S2NUM.EXE`, and `S2REG.EXE`.
+Keep the three Fortran-backend executables together in a writable directory.
+
+## Design constraints
+
+Vectors contain at most 2048 elements; input files contain at most 30000
+bytes. Memory is collected between top-level expressions. Small programs
+fit DOS conventional memory; a long loop in one expression can exhaust it.
+The replacement RNG is reproducible but does **not** reproduce S2's original
+Super-Duper sequence. S3 method dispatch, S4 classes, formula modeling,
+full database search paths, and user C/Fortran loading are not implemented.
+See the feature set before porting a larger S program.

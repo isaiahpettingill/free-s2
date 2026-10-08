@@ -13,5 +13,15 @@ for prefix, exe in [('TC', 'S2'), ('TF', 'S2F')]:
         (b / (stem + '.S')).write_text(c['source'])
         lines += [f'{exe} {stem}.S > {stem}.OUT',
                   f'if errorlevel 1 echo 1 > {stem}.RC']
+for f in (ROOT / 'examples').iterdir():
+    if f.is_file():
+        (b / f.name).write_bytes(f.read_bytes().replace(b'\r\n',b'\n').replace(b'\n',b'\r\n'))
+for prefix, exe in [('C', 'S2'), ('F', 'S2F')]:
+    lines += [f'{exe} ANALYZE.S > {prefix}DATA.OUT',
+              f'if errorlevel 1 echo 1 > {prefix}DATA.RC',
+              f'copy FIT.SVG {prefix}FIT.SVG', f'copy FIT.PS {prefix}FIT.PS',
+              f'{exe} RANDOM.S > {prefix}RNG.OUT',
+              f'if errorlevel 1 echo 1 > {prefix}RNG.RC',
+              f'copy HIST.SVG {prefix}HIST.SVG', f'copy QQ.SVG {prefix}QQ.SVG']
 lines += ['echo S2ALLDONE']
 (b / 'TESTDOS.BAT').write_bytes(('\r\n'.join(lines) + '\r\n').encode('ascii'))

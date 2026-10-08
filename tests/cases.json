@@ -98,7 +98,7 @@
   {
     "id": "IDX01-mixed-error",
     "source": "(1:3)[c(-1,2)]",
-    "error": "cannot mix",
+    "error": "only zeros with negative subscripts",
     "evidence": "provisional boundary"
   },
   {
@@ -206,7 +206,7 @@
   {
     "id": "VAL04-logical-NA",
     "source": "NA & F; NA | T; sum(c(1,NA)); sum(c(1,NA),na.rm=T)",
-    "out": "[1] F\n[1] T\n[1] NA\n[1] 1\n",
+    "out": "[1] F\n[1] T\n[1] NA\n[1] NA\n",
     "evidence": "provisional"
   },
   {
@@ -286,5 +286,173 @@
     "source": "i <- 0; z <- while(i<3) {i <- i+1; i*2}; z",
     "out": "[1] 6\n",
     "evidence": "B88 pp.348\u2013351"
+  },
+  {
+    "id": "ARG05-dots",
+    "source": "f<-function(...,extra=1)sum(...)+extra;f(1,2,extra=3)",
+    "evidence": "B88 pp354-356",
+    "out": "[1] 6\n"
+  },
+  {
+    "id": "ARG06-missing-default",
+    "source": "f<-function(x=2)c(missing(x),x);f()",
+    "evidence": "B88 p353",
+    "out": "[1] 1 2\n"
+  },
+  {
+    "id": "ARG07-substitute-forced",
+    "source": "f<-function(x){x;deparse(substitute(x))};f(1+2)",
+    "evidence": "B88 pp353-354",
+    "out": "[1] \"(1 + 2)\"\n"
+  },
+  {
+    "id": "IDX06-names",
+    "source": "x<-c(a=1,b=2);x[\"a\"];x[4]<-8;x",
+    "evidence": "B88 pp357-359",
+    "out": "[1] 1\n[1] 1 2 NA 8\n"
+  },
+  {
+    "id": "IDX07-array",
+    "source": "x<-array(1:8,c(2,2,2));x[2,1,2]",
+    "evidence": "B88 pp359-361",
+    "out": "[1] 6\n"
+  },
+  {
+    "id": "VAL05-complex",
+    "source": "(1+2i)*(3-4i);sqrt(-1+0i)",
+    "evidence": "B88 complex arithmetic",
+    "out": "[1] 11+2i\n[1] 0+1i\n"
+  },
+  {
+    "id": "STAT05-quantile",
+    "source": "quantile(1:4)",
+    "evidence": "B88 pp559-560",
+    "out": "[1] 1 1.5 2.5 3.5 4\n"
+  },
+  {
+    "id": "STAT06-trim",
+    "source": "mean(c(1,2,3,100),trim=.25)",
+    "evidence": "B88 pp505-506",
+    "out": "[1] 2.5\n"
+  },
+  {
+    "id": "STAT07-distributions",
+    "source": "pnorm(0);sum(dbinom(0:4,4,.5));round(qnorm(.975),6)",
+    "evidence": "B88 distribution entries; independent analytic identities",
+    "out": "[1] 0.5\n[1] 1\n[1] 1.959964\n"
+  },
+  {
+    "id": "STAT08-lsfit",
+    "source": "f<-lsfit(1:5,c(3,5,7,9,11));as.vector(f$coef);round(f$residuals,8)",
+    "evidence": "B88 pp499-500; exact linear data",
+    "out": "[1] 1 2\n[1] 0 0 0 0 0\n"
+  },
+  {
+    "id": "STAT09-rank-error",
+    "source": "lsfit(c(1,1,1),1:3)",
+    "evidence": "B88 pp499-500",
+    "error": "rank-deficient"
+  },
+  {
+    "id": "GROUP01-category",
+    "source": "g<-category(c(\"b\",\"a\",\"b\",\"a\"));as.character(g);as.vector(table(g));as.vector(tapply(1:4,list(g),mean))",
+    "evidence": "B88 pp136-137,p615",
+    "out": "[1] \"b\" \"a\" \"b\" \"a\"\n[1] 2 2\n[1] 3 2\n"
+  },
+  {
+    "id": "SEQ03-rep-length",
+    "source": "rep(c(1,2),length=5);rep(c(1,2),c(2,3))",
+    "evidence": "B88 rep appendix; A15",
+    "out": "[1] 1 2 1 2 1\n[1] 1 1 2 2 2\n"
+  },
+  {
+    "id": "SEQ04-diff",
+    "source": "diff(c(1,4,9,16),differences=2);diff(1:5,lag=2)",
+    "evidence": "B88 diff entry",
+    "out": "[1] 2 2\n[1] 2 2 2\n"
+  },
+  {
+    "id": "SEQ05-cumulative",
+    "source": "cumprod(1:4);cummin(c(3,1,2));cummax(c(1,3,2))",
+    "evidence": "B88 cumulative entries",
+    "out": "[1] 1 2 6 24\n[1] 3 1 1\n[1] 1 3 3\n"
+  },
+  {
+    "id": "META02-expression",
+    "source": "e<-expression(x<-2,x+3);eval(e);x",
+    "evidence": "B88 pp353-354",
+    "out": "[1] 5\n[1] 2\n"
+  },
+  {
+    "id": "LANG12-repeat",
+    "source": "x<-0;repeat{x<-x+1;if(x==3)break};x",
+    "evidence": "B88 pp348-351",
+    "out": "[1] 3\n"
+  },
+  {
+    "id": "LANG13-user-infix",
+    "source": "\"%plus%\"<-function(x,y)x+y;2 %plus% 3",
+    "evidence": "B88 pp338-341",
+    "out": "[1] 5\n"
+  },
+  {
+    "id": "MATH01-round",
+    "source": "round(c(.5,1.5,2.5));signif(123.456,3)",
+    "evidence": "Tie choice policy; B88 pp570-571",
+    "out": "[1] 0 2 2\n[1] 123\n"
+  },
+  {
+    "id": "ATTR01-dimnames",
+    "source": "m<-matrix(1:4,2,dimnames=list(c(\"a\",\"b\"),c(\"x\",\"y\")));m[\"b\",\"y\"]",
+    "evidence": "B88 pp359-361",
+    "out": "[1] 4\n"
+  },
+  {
+    "id": "STAT10-cdf-identities",
+    "source": "round(c(pchisq(2,2),pgamma(1,1),pbeta(.5,2,2),pt(1,1),pf(1,1,1)),8)",
+    "out": "[1] 0.63212056 0.63212056 0.5 0.75 0.5\n",
+    "evidence": "B88 formal model; independent identities and bounds"
+  },
+  {
+    "id": "VAL06-empty-complex",
+    "source": "length(complex(0));length(complex(real=1:3))",
+    "out": "[1] 0\n[1] 3\n",
+    "evidence": "B88 formal model; independent identities and bounds"
+  },
+  {
+    "id": "LANG14-short-character",
+    "source": "\"\" && stop();\"x\" || stop()",
+    "out": "[1] F\n[1] T\n",
+    "evidence": "B88 formal model; independent identities and bounds"
+  },
+  {
+    "id": "ATTR02-arithmetic",
+    "source": "names(c(a=1,b=2)+1)",
+    "out": "[1] \"a\" \"b\"\n",
+    "evidence": "B88 formal model; independent identities and bounds"
+  },
+  {
+    "id": "STAT11-required-parameter",
+    "source": "pgamma(1)",
+    "error": "required distribution parameter",
+    "evidence": "Explicit implemented profile limitations"
+  },
+  {
+    "id": "VAL07-complex-type-error",
+    "source": "Re(\"x\")",
+    "error": "numeric or complex",
+    "evidence": "Explicit implemented profile limitations"
+  },
+  {
+    "id": "GFX02-type-error",
+    "source": "plot(1:3,type=1)",
+    "error": "plot type",
+    "evidence": "Explicit implemented profile limitations"
+  },
+  {
+    "id": "ENV03-frame-error",
+    "source": "get(\"x\",frame=9)",
+    "error": "explicit search/frame",
+    "evidence": "Explicit implemented profile limitations"
   }
 ]

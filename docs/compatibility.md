@@ -12,6 +12,9 @@ conformance. No original S2 executable has been tested.
 | H20 | [Chambers, S, R, and Data Science (2020), §3.1](https://journal.r-project.org/articles/RJ-2020-028/) | Author's history | First-class functions; separates 1988 from 1992 modeling/classes |
 | P10 | [TIBCO Spotfire S+ 8.2 Programmer's Guide (November 2010)](https://www.msi.co.jp/solution/splus/download/pdf/pg.pdf) | Public vendor manual inspected | Later-family evidence only; cannot establish S2 conformance |
 | RFAQ | [R FAQ, §§3.1, 3.3](https://stat.ethz.ch/R-manual/R-devel/doc/manual/R-FAQ.html) | R project's comparison manual | Version names and divergence warnings, not a substitute S2 specification |
+| RICE00 | [Rice beginner tutorial](https://www.stat.rice.edu/~helpdesk/tutorial/Stut01.html) | S-PLUS 6.0 Unix tutorial, dated 2000 | Workflow corroboration; top-level `=` and fractional recycling differ from B88 |
+| RICE03 | [Rice intermediate tutorial](https://www.stat.rice.edu/~helpdesk/tutorial/Stut012.html) | HTML inspected; generated August 2003 | Distribution/graphics workflow corroboration; later dialect |
+| VR02 | [Venables and Ripley, MASS fourth edition (2002)](https://www.stats.ox.ac.uk/pub/MASS4/) | Authors’ edition description inspected; user-supplied mirror PDF returns HTTP 403 and has not been read | Later S-PLUS 6/R evidence; no uninspected content used as S2 authority |
 | RLANG | [R Language Definition, §§4.3.3–4.3.4](https://mac.r-project.org/man/R-lang.html) | R project's language manual | Comparative evidence only |
 
 P10 page references below are **printed pages**, not PDF page numbers
@@ -28,34 +31,31 @@ behavior, not the behavior of an unavailable historical executable.
 
 | ID | Feature / candidate rule | Manual locator | Grade | Implementation / validation |
 | --- | --- | --- | --- | --- |
-| SYN01 | Expressions, comments, separators; reserved names; `**` synonym | B88 §§11.1.1–11.1.2, pp.338–341 | B | Basic parser implemented; comment retention, `**`, repeat and complete escapes pending |
-| SYN02 | Operator precedence, equal levels left-associated except assignment | B88 pp.39–40, Table 3.1 | B | Implemented and tested; generic `%operator%` pending |
-| SYN03 | `<-`, `_`, `->`; `=` names arguments | B88 pp.36–41 | B | Implemented and tested |
-| VAL01 | Numeric/logical/character vectors, lists | B88 ch.5 | B | Implemented bounded subset |
-| VAL02 | Integer/complex/storage modes | B88 ch.5, ch.8 | B | Deferred; not complete mode fidelity |
-| VAL03 | NULL/zero-length objects | B88 ch.5; §11.4 | B | Basic values implemented; replacement boundary behavior pending |
-| VAL04 | Missing values; division by zero gives NA | B88 pp.41–42; §11.4.4 | B | Numeric sentinel implementation; cannot represent every finite double |
-| VEC01 | Recycling/coercion and fractional recycling warning | B88 p.39; pp.363–364 | B | Numeric recycling implemented; full character/logical coercion and attribute rules pending |
-| IDX01 | Positive/negative/logical subscripts; fractional truncation | B88 pp.102–104, 357–359 | B | Basic subset implemented |
-| IDX02 | `[`, `[[`, `$` distinctions | B88 pp.361–363 | B | Partial; names, atomic `$`, recursive replacement pending |
-| IDX03 | NA/out-of-range extraction returns missing atomic / NULL recursive | B88 pp.357–359 | B | Current conservative errors are a known incompatibility |
-| IDX04 | Replacement extends/coerces; NA consumes RHS slot; zero-length RHS changes nothing | B88 pp.357–363 | B | Current same-mode bounded replacement is incomplete; no R-style NULL deletion |
-| ATT01 | Names, dimensions, general attributes | B88 ch.5; §11.4 | B | Names and 2D dimensions subset; general attributes pending |
-| MAT01 | Column-major arrays, first dimension fastest | B88 pp.359–361 | B | 2D numeric matrices implemented; arbitrary arrays pending |
-| FUN01 | First-class functions | B88 ch.6; §11.2 | B | Implemented; no lexical capture |
-| FUN02 | Supplied promise in caller, default in callee, evaluated at most once | B88 pp.342–345 | B | Implemented; original expression retained; escaping-frame behavior needs probes |
-| FUN03 | Exact, unique prefix, then positional argument matching | B88 pp.354–356 | B | Implemented without dots |
-| FUN04 | `...`; formals after dots match exactly only | B88 pp.354–356 | B | Deferred |
-| ENV01 | Local, expression frame, session frame, cache, search directories; function lookup skips nonfunctions | B88 pp.117–123, 342–345 | B | Local/global subset; skip nonfunction bindings implemented; full search pending |
-| ENV02 | Assignments commit after successful top-level expression; errors roll back pending global writes | B88 pp.117–123, 345–347 | B | Top-level binding rollback implemented/tested; persistent directories and session frames pending |
-| CTL01 | Loops return last completed body; for restores existing local loop variable | B88 pp.348–351 | B | Loop restoration and last completed values implemented/tested; arbitrary nested control-transfer cases pending |
-| META01 | `missing`, `substitute`, expression/parse/deparse/eval | B88 pp.352–356; ch.7 | B | Expression/eval subset; quote is a provisional extension, not established S2 |
-| IO01 | Source, text input/output, persistent workspace | B88 ch.5, ch.8 | B | Script runner and REPL implemented; workspace persistence pending |
-| STAT01 | mean(x, trim=0); var(x,y); sum(...), prod(...) | B88 pp.505–506, 601–602, 633–634 | B | C/F77 mean and sample variance; trim/covariance/signatures incomplete; na.rm extension not historical |
-| STAT02 | Distributions, RNG, quantiles | B88 ch.8, appendix | B | Deferred; original RNG must be reconstructed rather than replaced silently |
-| FFI01 | User C/Fortran interfaces | B88 ch.11 | B | Internal F77 backend implemented; historical user-facing FFI deferred |
-| GFX01 | Graphics, coordinate systems and devices | B88 ch.4, ch.10; supplied embedded figures | B | Deferred; figures available to check geometry and labels, not device pixels |
-| VER01 | S3 modeling/method dispatch, S4 formal classes | H20 §3.1; RFAQ §3.1 | H | Outside target; basic attributes remain in scope |
+| SYN01 | Expressions, separators, escapes, reserved names, `**`, repeat | B88 §§11.1.1–11.1.2, pp.338–341 | B | Implemented; comments discarded rather than retained in language objects |
+| SYN02 | Operator precedence and user `%operator%` | B88 pp.39–40, Table 3.1; pp.338–341 | B | Implemented, independently tested |
+| SYN03 | `<-`, `_`, `->`; `=` names arguments | B88 pp.36–41 | B | Implemented; reject top-level `=` |
+| VAL01 | Numeric/logical/character, lists, NULL | B88 ch.5 | B | Bounded implementation, coercion and empty values |
+| VAL02 | Integer and complex modes | B88 ch.5, ch.8 | B | Complex arithmetic implemented; integer storage is a double-backed flag, not binary/storage fidelity |
+| VAL04 | NA and division by zero | B88 pp.41–42; §11.4.4 | B | Implemented with reserved double sentinel; cannot represent every finite double or infinite endpoint |
+| VEC01 | Recycling, coercion, attributes | B88 p.39; pp.363–364 | B | Fractional recycling warns; logical/character/complex coercion; attribute preservation still has edge gaps |
+| IDX01 | Positive/negative/logical/fractional/character indices | B88 pp.102–104, 357–359 | B | Implemented, including bounded extension and partial name extraction |
+| IDX02 | `[`, `[[`, `$`; atomic `$` returns NULL | B88 pp.361–363 | B | Implemented; nested side-effecting LHS evaluation needs further reconstruction |
+| IDX03 | NA/OOB atomic NA, recursive NULL | B88 pp.357–359 | B | Implemented and tested |
+| IDX04 | Replacement extension/coercion, NA RHS consumption, empty RHS no-op | B88 pp.357–363 | B | Implemented; no R NULL-deletion convention |
+| ATT01 | Names, general attrs, array dims/dimnames | B88 ch.5; pp.359–363 | B | Implemented up to 16 dimensions; metadata boundary behavior incomplete |
+| FUN01 | First-class functions, delayed actuals/defaults, matching, dots | B88 pp.342–345, 354–356 | B | Implemented; memoization and substitute-after-forcing tested |
+| ENV01 | Local/expression/session/working lookup, successful commitment | B88 pp.117–123 | B | Local/expression/session/working stores and rollback; database/cache/search paths incomplete, no lexical closures |
+| CTL01 | Recursive transfer, loop variable restore, last completed body | B88 pp.348–351 | B | Implemented and independently tested |
+| META01 | expression, parse/deparse, substitute, eval, missing | B88 pp.352–356; ch.7 | B | Implemented bounded subset; numeric/parent eval frames unsupported; quote is an extension |
+| IO01 | Source, scan/write, dump/restore | B88 ch.5/ch.8; pp.445, 568 | B | Readable ASCII persistence and scripts; no historical binary `.Data` database |
+| STAT01 | mean trim, var/cor matrix covariance, sum/prod | B88 pp.505–506, 601–602, 633–634 | B | Implemented; cor(trim != 0) rejected; no invented na.rm removal argument |
+| STAT02 | Distribution families and empirical quantile | B88 ch.8; pp.559–560 and appendix entries | B | 13 d/p/q/r families; quantile positions (i−.5)/n; independent numerics, endpoint/tail limits |
+| STAT03 | Historical random seed and generator | B88 p.583, p.656 | B | set.seed present; replacement Park–Miller and modern samplers explicitly differ from Super-Duper |
+| STAT04 | lsfit coefficients/residuals/QR | B88 pp.499–500 | B | C/F77 full-rank QR fitting; coefficients/residuals, weights, multiple responses; qr return object NULL |
+| GROUP01 | Categories, cut, table, split, tapply | B88 pp.136–137, 426–427, 615 | B | Implemented; numeric category codes and levels, grouped arrays |
+| FFI01 | User C/Fortran interface | B88 ch.11 | B | Internal F77 backend; historical user-facing FFI deferred |
+| GFX01 | Plot geometry, high/low level graphics, devices | B88 ch.4/ch.10 and appendix | B | Core charts, SVG extension and PostScript; partial parameters/devices, no historical pixel identity |
+| VER01 | S3 modeling/dispatch and S4 formal classes | H20 §3.1; RFAQ §3.1 | H | Outside target; ordinary class/attribute metadata supported |
 
 Implementation tests establish this interpreter's behavior; they do not
 establish agreement with an original S executable. The complete manual
@@ -128,4 +128,32 @@ the following findings supersede their provisional decisions:
 
 Chart reconstruction should record figure/page, input data, plotting calls,
 axes, coordinates and clipping. Raster resemblance alone cannot establish
-historical graphics-device compatibility. Graphics remain a later phase.
+historical graphics-device compatibility. Core graphics now exist; reconstructed geometry is not a claim of pixel equivalence.
+
+## Reconstruction decisions in this implemented profile
+
+Earlier “pending” statements in the audit trail are superseded by the current
+matrix and this section. The primary target remains the printed 1988 book.
+Later tutorials inspire practical workflows, not silent dialect changes.
+
+| ID | Historical ambiguity or deliberate difference | Decision |
+| --- | --- | --- |
+| A15 | rep chapter discussion and appendix differ in argument spelling (`length.out` versus `length`) | Implement appendix `rep(x,times,length)`; do not infer modern R signature |
+| A16 | dump appendix formal `fileout` versus example shorthand `file` | Implementation exposes `file`; positional usage is portable; canonical historical naming remains to reconcile |
+| A17 | Round tie direction is not specified in inspected pp.570–571 | Explicit ties-to-even policy, tested; no historic bit-level claim |
+| A18 | Original Super-Duper starting-state layout and exact algorithms are not fully specified in the book | Replacement RNG clearly identified; `.Random.seed` scalar layout differs; set.seed itself is historical |
+| A19 | Rice later tutorial treats fractional recycling as an error and permits top-level `=` | Keep B88 warning and `<-` semantics; record tutorial version difference |
+| A20 | MASS 2002 edition targets S-PLUS 6.x and R, per the authors | Separate later modeling/dispatch from S2. Mirror PDF could not be retrieved, so its contents are not claimed as inspected |
+| A21 | Saved database binary layout and original graphics driver behavior unavailable | Portable ASCII dump/restore and SVG extension; no binary/database or original device conformance claim |
+| A22 | Original numerical precision, rank decisions and rounding vary by machine/library | Independent double-precision C/F77 QR and distribution routines; full-rank subset, explicit tolerances |
+
+Numerical formula references used for independent implementation:
+[NIST DLMF incomplete beta continued fractions](https://dlmf.nist.gov/8.17)
+and [incomplete gamma continued fractions](https://dlmf.nist.gov/8.9).
+These describe mathematics, not original S implementation choices.
+
+An original runtime would still be needed to resolve undocumented boundary
+behavior. Full statistical-library coverage, retained comments, complete
+frame/database semantics, side-effecting nested replacement expressions,
+QR object layout, and detailed device parameters remain open work. Passing
+our fixtures is not a substitute for those observations.
