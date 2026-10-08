@@ -1,0 +1,290 @@
+[
+  {
+    "id": "SYN02-powers",
+    "source": "2^3^2",
+    "out": "[1] 64\n",
+    "evidence": "B88 pp.39-40"
+  },
+  {
+    "id": "SYN02-unary",
+    "source": "-2^2; -1:2",
+    "out": "[1] -4\n[1] -1 0 1 2\n",
+    "evidence": "B88 Table 3.1"
+  },
+  {
+    "id": "SYN02-logic",
+    "source": "T | F & F",
+    "out": "[1] F\n",
+    "evidence": "B88 Table 3.1"
+  },
+  {
+    "id": "SYN03-underscore",
+    "source": "x _ 9; x",
+    "out": "[1] 9\n",
+    "evidence": "B88 p.36"
+  },
+  {
+    "id": "SYN03-right-arrow",
+    "source": "3 -> x; x",
+    "out": "[1] 3\n",
+    "evidence": "B88 pp.40-41"
+  },
+  {
+    "id": "SYN03-chain",
+    "source": "x <- y <- 4; x+y",
+    "out": "[1] 8\n",
+    "evidence": "B88 p.36"
+  },
+  {
+    "id": "SYN03-equals-rejected",
+    "source": "x = 4",
+    "error": "= names arguments",
+    "evidence": "B88 p.38"
+  },
+  {
+    "id": "SYN01-comment",
+    "source": "x <- 2 + # continued\n3; x",
+    "out": "[1] 5\n",
+    "evidence": "B88 p.38"
+  },
+  {
+    "id": "SYN01-block-newlines",
+    "source": "f <- function(x) {\ny <- x+1\ny*2\n}; f(2)",
+    "out": "[1] 6\n",
+    "evidence": "B88 function examples"
+  },
+  {
+    "id": "VEC01-recycling",
+    "source": "1:6 + c(10,20)",
+    "out": "[1] 11 22 13 24 15 26\n",
+    "evidence": "B88 p.39"
+  },
+  {
+    "id": "VEC01-logical-coercion",
+    "source": "c(T,F)+2",
+    "out": "[1] 3 2\n",
+    "evidence": "B88 p.39"
+  },
+  {
+    "id": "VEC01-string-coercion",
+    "source": "c(1,\"two\",3)",
+    "out": "[1] \"1\" \"two\" \"3\"\n",
+    "evidence": "provisional"
+  },
+  {
+    "id": "IDX01-positive",
+    "source": "x <- c(10,20,30); x[c(3,1,3)]",
+    "out": "[1] 30 10 30\n",
+    "evidence": "B88 p.36"
+  },
+  {
+    "id": "IDX01-negative",
+    "source": "(1:5)[-c(2,4)]",
+    "out": "[1] 1 3 5\n",
+    "evidence": "B88 p.37"
+  },
+  {
+    "id": "IDX01-logical",
+    "source": "x <- -2:2; x[x>0]",
+    "out": "[1] 1 2\n",
+    "evidence": "B88 p.37"
+  },
+  {
+    "id": "IDX04-copy",
+    "source": "x <- 1:3; y <- x; y[2] <- 9; x; y",
+    "out": "[1] 1 2 3\n[1] 1 9 3\n",
+    "evidence": "provisional value semantics"
+  },
+  {
+    "id": "IDX01-mixed-error",
+    "source": "(1:3)[c(-1,2)]",
+    "error": "cannot mix",
+    "evidence": "provisional boundary"
+  },
+  {
+    "id": "IDX02-list",
+    "source": "x <- list(a=3,b=c(4,5)); x$a; x[[2]]; length(x[2])",
+    "out": "[1] 3\n[1] 4 5\n[1] 1\n",
+    "evidence": "P10"
+  },
+  {
+    "id": "MAT01-columns",
+    "source": "m <- matrix(1:6,nrow=2); m; m[2,3]; m[,2]",
+    "out": "[1,] 1 3 5\n[2,] 2 4 6\n[1] 6\n[1] 3 4\n",
+    "evidence": "P10"
+  },
+  {
+    "id": "MAT01-byrow",
+    "source": "matrix(1:6,nrow=2,byrow=T)",
+    "out": "[1,] 1 2 3\n[2,] 4 5 6\n",
+    "evidence": "P10"
+  },
+  {
+    "id": "FUN01-first-class",
+    "source": "f <- function(x) x*x; g <- function(fun,x) fun(x); g(f,7)",
+    "out": "[1] 49\n",
+    "evidence": "B88 p.38/H20"
+  },
+  {
+    "id": "FUN02-lazy-unused",
+    "source": "f <- function(x,y) x; f(3,stop())",
+    "out": "[1] 3\n",
+    "evidence": "P10 provisional S2"
+  },
+  {
+    "id": "FUN02-caller-frame",
+    "source": "g <- function(x) x; f <- function() {a <- 8; g(a)}; f()",
+    "out": "[1] 8\n",
+    "evidence": "P10 provisional S2"
+  },
+  {
+    "id": "FUN02-default-frame",
+    "source": "x <- 100; f <- function(x,y=x+2) y; f(5)",
+    "out": "[1] 7\n",
+    "evidence": "P10 provisional S2"
+  },
+  {
+    "id": "FUN02-force-once",
+    "source": "z <- 0; f <- function(x) x+x; f({z <<- z+1; z}); z",
+    "out": "[1] 2\n[1] 1\n",
+    "evidence": "provisional"
+  },
+  {
+    "id": "FUN03-named",
+    "source": "f <- function(a,b=2) a-b; f(b=5,a=9)",
+    "out": "[1] 4\n",
+    "evidence": "B88 pp.37-38"
+  },
+  {
+    "id": "FUN03-duplicate",
+    "source": "f <- function(x) x; f(x=1,x=2)",
+    "error": "more than once",
+    "evidence": "provisional boundary"
+  },
+  {
+    "id": "ENV01-no-closure",
+    "source": "y <- 100; f <- function() {y <- 10; function(x) x+y}; h <- f(); h(3)",
+    "out": "[1] 103\n",
+    "evidence": "RLANG/P10 provisional S2"
+  },
+  {
+    "id": "CTL01-if",
+    "source": "if (2<3) 4 else 5",
+    "out": "[1] 4\n",
+    "evidence": "B88 examples"
+  },
+  {
+    "id": "CTL01-for",
+    "source": "s <- 0; for(i in 1:4) {if(i==2) next; s <- s+i}; s",
+    "out": "[1] 8\n",
+    "evidence": "provisional"
+  },
+  {
+    "id": "CTL01-while-break",
+    "source": "i <- 0; while(T) {i <- i+1; if(i==3) break}; i",
+    "out": "[1] 3\n",
+    "evidence": "provisional"
+  },
+  {
+    "id": "CTL01-return",
+    "source": "f <- function(x) {if(x<0) return(9); x}; f(-1)",
+    "out": "[1] 9\n",
+    "evidence": "B88 function examples"
+  },
+  {
+    "id": "CTL01-short-circuit",
+    "source": "F && stop(); T || stop(); T && 7; F || 8",
+    "out": "[1] F\n[1] T\n[1] T\n[1] T\n",
+    "evidence": "B88 p.354 formal model; conflicts p.35, A12"
+  },
+  {
+    "id": "VAL04-NA",
+    "source": "1/0; sqrt(c(1,NA,4)); is.na(c(NA,2))",
+    "out": "[1] NA\n[1] 1 NA 2\n[1] T F\n",
+    "evidence": "B88 pp.41-42"
+  },
+  {
+    "id": "VAL04-logical-NA",
+    "source": "NA & F; NA | T; sum(c(1,NA)); sum(c(1,NA),na.rm=T)",
+    "out": "[1] F\n[1] T\n[1] NA\n[1] 1\n",
+    "evidence": "provisional"
+  },
+  {
+    "id": "STAT01-summaries",
+    "source": "sum(1:5); mean(1:5); var(1:5); prod(1:4); range(3,1,7)",
+    "out": "[1] 15\n[1] 3\n[1] 2.5\n[1] 24\n[1] 1 7\n",
+    "evidence": "B88 pp.45-46"
+  },
+  {
+    "id": "STAT01-offset-variance",
+    "source": "var(c(1000000001,1000000002,1000000003))",
+    "out": "[1] 1\n",
+    "evidence": "B88 p.46 numerical intent"
+  },
+  {
+    "id": "STAT01-seq-rep",
+    "source": "seq(1,2,by=.5); rep(c(2,3),c(2,1)); length(seq(along=numeric(0)))",
+    "out": "[1] 1 1.5 2\n[1] 2 2 3\n[1] 0\n",
+    "evidence": "B88 p.42"
+  },
+  {
+    "id": "STAT01-rev-sort",
+    "source": "rev(sort(c(3,1,2))); sort(c(\"z\",\"A\",\"b\"))",
+    "out": "[1] 3 2 1\n[1] \"A\" \"b\" \"z\"\n",
+    "evidence": "B88 p.43"
+  },
+  {
+    "id": "STAT01-diff-cumsum",
+    "source": "diff(c(2,5,9)); cumsum(c(2,3,4)); log(8,base=2)",
+    "out": "[1] 3 4\n[1] 2 5 9\n[1] 3\n",
+    "evidence": "B88 pp.38,44,48"
+  },
+  {
+    "id": "META01-quote-eval",
+    "source": "x <- 4; e <- quote(x+2); x <- 7; eval(e)",
+    "out": "[1] 9\n",
+    "evidence": "P10 provisional S2"
+  },
+  {
+    "id": "LIMIT-vector",
+    "source": "1:2049",
+    "error": "sequence too long",
+    "evidence": "implementation limit"
+  },
+  {
+    "id": "LIMIT-parser",
+    "source": "{",
+    "error": "unclosed block",
+    "evidence": "implementation boundary"
+  },
+  {
+    "id": "FUN02-recursive-promise",
+    "source": "f <- function(x=x) x; f()",
+    "error": "recursive promise",
+    "evidence": "implementation boundary"
+  },
+  {
+    "id": "SYN01-reserved-T",
+    "source": "T <- 2",
+    "error": "reserved name",
+    "evidence": "B88 pp.338\u2013341"
+  },
+  {
+    "id": "ENV01-function-lookup",
+    "source": "sum <- 2; sum(1:3)",
+    "out": "[1] 6\n",
+    "evidence": "B88 pp.117\u2013123, 342\u2013345"
+  },
+  {
+    "id": "CTL01-for-restoration",
+    "source": "i <- 9; z <- for(i in 1:3) i*2; i; z",
+    "out": "[1] 9\n[1] 6\n",
+    "evidence": "B88 pp.348\u2013351"
+  },
+  {
+    "id": "CTL01-while-value",
+    "source": "i <- 0; z <- while(i<3) {i <- i+1; i*2}; z",
+    "out": "[1] 6\n",
+    "evidence": "B88 pp.348\u2013351"
+  }
+]
